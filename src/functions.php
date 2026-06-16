@@ -122,7 +122,7 @@ function buscarProdutos($produtos) {
         return;
     }
 
-    echo "\nProdutos encontrados:\n\n";
+    echo "\nPRODUTOS ENCONTRADOS:\n\n";
 
     foreach ($encontrados as $produto) {
         echo "ID: ".$produto['id']."\n";
