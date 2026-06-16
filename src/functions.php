@@ -118,7 +118,7 @@ function buscarProdutos($produtos) {
     });
 
     if (empty($encontrados)) {
-        echo "Nenhum produto encontrado com o nome '$busca'!\n";
+        echo "Nenhum produto encontrado com o nome '$busca'.\n";
         return;
     }
 
