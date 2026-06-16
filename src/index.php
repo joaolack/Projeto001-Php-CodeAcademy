@@ -17,7 +17,7 @@ while (true) {
     echo "6. Estatísticas\n";
     echo "0. Sair\n";
 
-    $opcao = trim(fgets(STDIN));
+    $opcao = readline("Escolha uma opção: ");
     
     switch ($opcao) {
 
@@ -54,6 +54,6 @@ while (true) {
     }
 
     echo "\nPressione ENTER para continuar...";
-    fgets(STDIN);
+    readline();
 } 
 

@@ -29,7 +29,7 @@ function validarPreco($valor) {
 }
 
 
-function cadastrarProduto($produtos) {
+function cadastrarProduto(&$produtos) {
     echo "\n=====Cadastro de Produto=====\n";
 
     do {
@@ -111,7 +111,7 @@ function buscarProdutos($produtos) {
     echo "\n=====Busca de Produtos=====\n";
 
     echo "Digite o nome do produto para buscar: ";
-    $busca = trim(fgets(STDIN));
+    $busca = trim(readline());
 
     $encontrados = array_filter($produtos, function ($produto) use ($busca) {
         return stripos($produto['nome'], $busca) !== false;
@@ -134,7 +134,99 @@ function buscarProdutos($produtos) {
     };
 };
 
+function editarProduto(&$produtos) {
+    echo "\n=====Editar Produto=====\n";
 
+    $id = (readline("Informer o ID do produto: "));
+
+    if (!validarInteiro($id)) {
+        echo "ID inválido\n";
+        return;
+    }
+
+    $id = (int) $id;
+
+    foreach ($produtos as &$produto) {
+        if ($produto["id"] === $id) {
+            echo "Produto encontrado. Pressione ENTER para manter o valor atual.\n";
+            
+            $nome = trim(readline("Nome atual: ({$produto['nome']}): "));
+            if ($nome !== "") {
+                if (validarString($nome)) {
+                    $produto['nome'] = $nome;
+                }  else {
+                    echo "Nome inválido. Nome antigo mantido.\n";
+                }
+            }
+
+            $preco = trim(readline("Preço atual: ({$produto['preco']}): "));
+            if ($preco !== "") {
+                if (validarPreco($preco)) {
+                    $produto['preco'] = (float) str_replace(",", ".", $preco);
+                } else {
+                    echo "Preço inválido. Valor antigo mantido.\n";
+                }
+            }
+
+            $quantidade = trim(readline("Quantidade atual: ({$produto['quantidade']}): "));
+            if ($quantidade !== "") {
+                if (validarInteiro($quantidade)) {
+                    $produto['quantidade'] = (int) $quantidade;
+                } else {
+                    echo "Quantidade inválida. Quantidade antiga mantida.\n";
+                }
+            }
+
+            $disponivelAtual = $produto['disponivel'] ? 'Sim' : 'Não';
+            $disponivel = readline("Disponível ({$disponivelAtual}) [s/n]: ");
+            if ($disponivel !== "") {
+                if (validarBooleano($disponivel)) {
+                    $produto['disponivel'] = strtolower(trim($disponivel)) === "s";
+                } else {
+                    echo "Valor inválido. Mantendo disponibilidade atual.\n";
+                }
+            }
+
+            echo "Produto editado com sucesso.\n";
+            return;
+        }
+    }
+    echo "Produto não encontrado";
+
+}
+
+function removerProduto(&$produtos) {
+    echo "\n=====Remover Produto=====\n";
+
+    $id = (readline("Informer o ID do produto: "));
+
+    if (!validarInteiro($id)) {
+        echo "ID inválido\n";
+        return;
+    }
+
+    $id = (int) $id;
+
+    foreach ($produtos as $indice => $produto) {
+        if ($produto["id"] === $id) {
+            exibirProduto($produto);
+
+            $resposta = strtolower(trim(readline("Tem certeza que deseja remover? (s/n): ")));
+
+            if ($resposta === "s") {
+                unset($produtos[$indice]);
+                $produtos = array_values($produtos);
+                echo "Produto removido com sucesso.\n";
+            } else {
+                echo "Remoção cancelada.\n";
+            }
+
+            return;
+        }
+    }
+
+    echo "Produto não encontrado.\n";
+}
 
 function estatisticas($produtos) {
     echo "\n=====Estatísticas=====\n";
@@ -153,5 +245,14 @@ function estatisticas($produtos) {
     echo "Valor total do estoque: R$ ".number_format($sumPreco, 2, ',', '.')."\n";
     echo "Preço médio dos produtos: ".$mediaPreco."\n";
     echo "Produtos ainda disponíveis: ".$produtosDisponiveis."\n";
+}
 
-};
+function exibirProduto($produto) {
+    $disponivel = $produto['disponivel'] ? 'Sim' : 'Não';
+
+    echo "ID: {$produto['id']}\n";
+    echo "Nome: {$produto['nome']}\n";
+    echo "Preço: R${$produto['preco']}\n";
+    echo "Quantidade: {$produto['quantidade']}\n";
+    echo "Disponível: {$disponivel}\n";
+}
